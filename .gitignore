@@ -1,0 +1,25 @@
+# 凭证 —— 绝不提交
+script/.tushare_token
+.env
+
+# 数据与产出(体量大, 由脚本重新生成), 但保留各文件夹的说明文档
+/data_raw/
+/data_clean/
+/factors/
+/backtest/
+/live_tracking/
+!/data_raw/README.md
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# 版权: 开源证券研报PDF不推到公开仓库
+相关研报与文章/
+.Rhistory
