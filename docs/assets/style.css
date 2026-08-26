@@ -1,0 +1,209 @@
+/* China Value Factor Models dashboard */
+
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+  --accent: #2a78d6;      /* series 1: blue */
+  --accent-2: #1baf7a;    /* series 2: aqua */
+  --accent-3: #eda100;    /* series 3: yellow */
+  --accent-4: #4a3aa7;    /* series 5: violet */
+  --accent-5: #eb6834;    /* series 8: orange */
+  --pos: #2a78d6;         /* diverging: positive pole */
+  --neg: #e34948;         /* diverging: negative pole */
+  --long: #006300;
+  --short: #b32e2e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --accent: #3987e5;
+    --accent-2: #199e70;
+    --accent-3: #c98500;
+    --accent-4: #9085e9;
+    --accent-5: #d95926;
+    --pos: #3987e5;
+    --neg: #e66767;
+    --long: #0ca30c;
+    --short: #e66767;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+code { font-size: 0.85em; background: var(--grid); padding: 1px 5px; border-radius: 4px; }
+
+/* header */
+.site-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 32px 0;
+}
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+h1 { margin: 0 0 4px; font-size: 24px; letter-spacing: -0.01em; }
+.subtitle { margin: 0; color: var(--ink-2); }
+.header-meta { text-align: right; color: var(--muted); font-size: 13px; }
+.header-meta strong { color: var(--ink); }
+
+.tabs {
+  max-width: 1200px;
+  margin: 20px auto 0;
+  display: flex;
+  gap: 4px;
+}
+.tab {
+  appearance: none;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink-2);
+  padding: 10px 18px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  border-radius: 6px 6px 0 0;
+}
+.tab:hover { background: var(--page); }
+.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+/* layout */
+main { max-width: 1200px; margin: 0 auto; padding: 24px 32px 48px; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.section-title { margin: 32px 0 12px; font-size: 17px; }
+.hint { font-weight: 400; font-size: 12.5px; color: var(--muted); margin-left: 6px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.card h4 { margin: 0 0 10px; font-size: 14px; }
+.intro-card h2 { margin: 0 0 8px; font-size: 19px; }
+.intro-card p { margin: 0; color: var(--ink-2); }
+
+/* stat tiles */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.stat-tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.stat-tile .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.stat-tile .value { font-size: 22px; font-weight: 650; letter-spacing: -0.01em; }
+.stat-tile .sub { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.stat-tile .value.pos { color: var(--long); }
+.stat-tile .value.neg { color: var(--short); }
+
+/* charts */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+  gap: 16px;
+}
+.chart-card { margin-bottom: 0; }
+.chart-box { position: relative; height: 260px; }
+.chart-box.tall { height: 340px; }
+.chart-card.wide { grid-column: 1 / -1; }
+
+/* tables */
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+  gap: 16px;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th, .data-table td {
+  text-align: right;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--grid);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.data-table th { color: var(--muted); font-weight: 600; font-size: 12px; }
+.data-table th:first-child, .data-table td:first-child,
+.data-table th:nth-child(2), .data-table td:nth-child(2) { text-align: left; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table td.pos { color: var(--long); }
+.data-table td.neg { color: var(--short); }
+.long-label { color: var(--long); }
+.short-label { color: var(--short); }
+
+.table-note { margin: 0 0 12px; font-size: 12.5px; color: var(--ink-2); }
+.evo-picker { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.evo-picker select {
+  font: inherit; margin-left: 8px; padding: 6px 10px;
+  background: var(--page); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 6px;
+}
+.data-table td.muted-cell { color: var(--muted); }
+.data-table sup { font-size: 0.7em; color: var(--accent); font-weight: 700; }
+
+.corr-table th, .corr-table td { text-align: center; }
+.corr-table td:first-child, .corr-table th:first-child { text-align: left; font-weight: 600; }
+
+.changes-line { display: flex; flex-wrap: wrap; gap: 20px; color: var(--ink-2); font-size: 14px; }
+.changes-line strong { color: var(--ink); }
+
+.note-card ul { margin: 0; padding-left: 20px; color: var(--ink-2); font-size: 13.5px; }
+.note-card li { margin-bottom: 4px; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12.5px;
+  padding: 20px 32px 40px;
+}
+.site-footer p { max-width: 1200px; margin: 0 auto; }
+
+@media (max-width: 720px) {
+  main { padding: 16px; }
+  .site-header { padding: 16px 16px 0; }
+  .chart-grid, .two-col { grid-template-columns: 1fr; }
+  .chart-box { height: 220px; }
+}

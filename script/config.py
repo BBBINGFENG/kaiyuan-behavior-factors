@@ -49,7 +49,9 @@ for _folder in [DATA_RAW_DIR, DATA_CLEAN_DIR, FACTOR_DIR, BACKTEST_DIR]:
 # 这里统一从 2009 年起下载, 留足 1 年缓冲。
 # 若日后想要更早的历史, 直接调小下面的日期重跑即可 —— 缺失年份会自动补下载。
 START_DATE = "20090101"
-END_DATE = "20260630"
+# 动态到"今天": live 每日更新时自动拉取最新交易日数据。
+# 想固定复现某个截止日, 把下面改成固定字符串(如 "20260630")即可。
+END_DATE = __import__("datetime").date.today().strftime("%Y%m%d")
 
 # 各接口官方数据的实际起始时间不同, 提前设好避免大量空请求
 API_START_DATES = {

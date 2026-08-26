@@ -23,3 +23,4 @@ venv/
 # 版权: 开源证券研报PDF不推到公开仓库
 相关研报与文章/
 .Rhistory
+live_update.log

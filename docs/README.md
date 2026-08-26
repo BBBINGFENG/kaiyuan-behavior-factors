@@ -1,70 +1,53 @@
-# 交易行为因子 · 实时监控网站
+# docs/ — 实时监控 dashboard（GitHub Pages）
 
-理想振幅 / 理想反转 / 合成因子的监控 dashboard。单文件 `index.html`（数据内嵌，
-图表用 ECharts CDN），可直接托管到 GitHub Pages。
+理想振幅 / 理想反转 / 合成因子的监控页，**聚焦今年 live 表现**。设计沿用
+china-value-dashboard（浅色暖调 + 深色模式 + Chart.js 本地打包）。
+
+## 结构
+
+```
+docs/
+├── index.html                 静态骨架
+├── assets/
+│   ├── style.css              样式(浅色/深色)
+│   ├── chart.umd.js           Chart.js(本地打包, 不走CDN → 画质稳定)
+│   └── app.js                 渲染层
+└── data/
+    └── dashboard_data.js      ← 唯一每日重生成的文件(window.DASHBOARD_DATA)
+```
 
 ## 内容
 
-- 三因子介绍
-- 关键指标（合成因子：年化收益/IR/最大回撤/胜率/波动/IC）
-- 净值曲线、回撤、月度收益、年度收益图
-- 因子绩效表 + **Newey-West t 统计量**（全 / 样本内 / 样本外，收益显著性）
-- 最新持仓（合成因子多空 Top 15）
+- **关键指标（今年 live）**：今年累计/年化/Sharpe/最大回撤/波动 + 回测年化(参考)
+- **Live 净值 / Live 回撤**：今年每日盯市（主视图）
+- 历史回测净值（月度对数）、月度/年度多空收益、各因子最新月
+- 最新持仓（合成多空 Top 15）
+- 因子绩效 + Newey-West t 统计量（全/样本内/样本外）
+
+## 每日自动更新（每天 8:00）
+
+由 launchd `com.kaiyuan.daily-update` 每天 8 点调用项目根目录的
+`run_daily_update.sh`：增量下载 → 因子/回测/live 盯市 → 重生成
+`data/dashboard_data.js` → `git push`。
+
+```bash
+# 手动跑一次
+./run_daily_update.sh
+# 查看日志
+tail -f live_update.log
+# 停用/重启定时
+launchctl unload ~/Library/LaunchAgents/com.kaiyuan.daily-update.plist
+launchctl load -w ~/Library/LaunchAgents/com.kaiyuan.daily-update.plist
+```
 
 ## 本地预览
 
 ```bash
 cd docs && python3 -m http.server 8000
-# 浏览器打开 http://localhost:8000
-```
-（直接双击 index.html 也能看，图表走 CDN 需联网。）
-
-## 重新生成（数据更新后）
-
-```bash
-python src/website/build_dashboard.py   # 读最新回测结果 → 重写 docs/index.html
+# 打开 http://localhost:8000
 ```
 
-## 「实时更新」完整流程（收盘后）
+## 部署（GitHub Pages）
 
-每日收盘后跑一遍完整管线，再重生成网站并推送：
-
-```bash
-# 1. 增量下载当日日频数据(断点续传, 已有的跳过)
-python script/download_02_daily.py
-python script/download_03_index_industry.py
-
-# 2. 重建清洗层 → 因子 → 中性化 → 合成 → 回测
-python src/data_clean.py
-python src/factors/ideal_amplitude.py
-python src/factors/ideal_reversal.py
-python src/factors/neutralize.py
-python src/factors/composite.py
-python src/backtest/run.py ideal_amplitude_neutral -1
-python src/backtest/run.py ideal_reversal_neutral -1
-python src/backtest/run.py composite 1
-
-# 3. 重生成网站并推送
-python src/website/build_dashboard.py
-git add docs/index.html && git commit -m "update $(date +%F)" && git push
-```
-
-可把以上写进一个 `update.sh`，用 macOS launchd 或 GitHub Actions 定时（如每日 18:00）触发。
-
-## 部署到 GitHub Pages
-
-```bash
-# 若尚未建仓库
-git init && git add . && git commit -m "init"
-git remote add origin https://github.com/<用户名>/<仓库名>.git
-git push -u origin main
-```
-
-然后在 GitHub 仓库 **Settings → Pages** 里：
-- Source 选 `main` 分支
-- 目录选 `/docs`
-
-几分钟后网站上线：`https://<用户名>.github.io/<仓库名>/`
-
-> ⚠️ **别把凭证推上去**：`.gitignore` 已忽略 `script/.tushare_token`。推之前 `git status`
-> 确认没有它。`data_raw/`（2.4G）也已忽略，不会入库。
+仓库 **Settings → Pages** → Source: `main` 分支 + **`/docs`** 目录 → Save。
+网址：`https://BBBINGFENG.github.io/<仓库名>/`。每次 `git push` 后自动重新部署。
