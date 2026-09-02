@@ -1,0 +1,16 @@
+# 开源金工交易行为因子复现 —— 依赖清单
+# 开发与运行环境：Python 3.9.6（macOS 系统自带 /usr/bin/python3）
+# 安装：pip3 install -r requirements.txt
+#
+# 数据源为 tushare（付费接口），需自备 token，通过环境变量 TUSHARE_TOKEN
+# 或 script/.tushare_token 提供，代码中不写入任何真实 token。
+
+pandas==2.3.3
+numpy==2.0.2
+pyarrow==21.0.0        # parquet 读写（因子面板与回测结果的存储格式）
+tushare==1.4.29        # 行情、财务与资金流数据接口
+matplotlib==3.9.4      # 回测图表（src/backtest/run.py、oos_diagnosis.py）
+scipy==1.13.1          # 统计检验
+tushare==1.4.29       # 数据源接口
+scipy                 # spearman 相关 / 回归
+matplotlib            # 回测绘图（可选）

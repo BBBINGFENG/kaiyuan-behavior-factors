@@ -207,3 +207,10 @@ main { max-width: 1200px; margin: 0 auto; padding: 24px 32px 48px; }
   .chart-grid, .two-col { grid-template-columns: 1fr; }
   .chart-box { height: 220px; }
 }
+
+/* 数据陈旧告警横幅 */
+.stale-banner {
+  background: var(--short); color: #fff;
+  padding: 12px 18px; border-radius: 8px;
+  margin-bottom: 16px; font-weight: 600; font-size: 14px;
+}

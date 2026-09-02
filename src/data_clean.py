@@ -43,8 +43,15 @@ def _load_daily_api(api_name, cols=None):
     files = sorted((DATA_RAW / api_name).glob("*.parquet"))
     if not files:
         raise FileNotFoundError(f"{api_name} 无数据, 请先运行下载脚本")
-    return pd.concat([pd.read_parquet(f, columns=cols) for f in files],
-                     ignore_index=True)
+    df = pd.concat([pd.read_parquet(f, columns=cols) for f in files],
+                   ignore_index=True)
+    # 防御性去重: 若 data_raw 下混入了重叠快照(如误存的 all.parquet 与年份文件重复),
+    # 同一 (trade_date, ts_code) 会出现多行, 导致后续 pivot 报 "duplicate entries"。
+    # 按主键去重(保留最后一次), 保证 _to_panel 稳定。
+    key = [c for c in ("trade_date", "ts_code") if c in df.columns]
+    if key:
+        df = df.drop_duplicates(key, keep="last").reset_index(drop=True)
+    return df
 
 
 def _load_basic(name):
