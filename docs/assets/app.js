@@ -49,6 +49,16 @@
   document.getElementById("meta-latest-date").textContent = DATA.meta.latest_date;
   document.getElementById("meta-generated").textContent = DATA.meta.generated_at;
 
+  /* ---------- 数据陈旧告警(主动提示"我过期了", 不用翻日志) ---------- */
+  (function () {
+    const days = Math.floor((Date.now() - new Date(DATA.meta.latest_date + "T15:00:00")) / 86400000);
+    if (days >= 5) {
+      const b = el("div", "stale-banner",
+        `⚠️ 数据已 ${days} 天未更新（最新 ${DATA.meta.latest_date}）— 每日更新任务可能失败，请检查 live_update.log 并手动运行 ./run_daily_update.sh`);
+      document.querySelector("main").prepend(b);
+    }
+  })();
+
   /* ---------- 关键指标(Live) ---------- */
   const S = DATA.live.stats;
   const tiles = [

@@ -22,6 +22,7 @@ log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 run() { local n="$1"; shift; log "START $n"; if "$@" >>"$LOG" 2>&1; then log "OK    $n"; else log "FAIL  $n"; exit 1; fi; }
 
 log "===== daily update begin ====="
+run "刷新基础信息"   "$PY" script/download_01_basic.py   # trade_cal/stock_basic, 否则调仓日历会卡住
 run "下载日频增量"   "$PY" script/download_02_daily.py
 run "下载指数行业"   "$PY" script/download_03_index_industry.py
 run "清洗层"         "$PY" src/data_clean.py
